@@ -1,0 +1,3 @@
+G:\visual c++\Arduino-COMPort-communication-exe\Arduino-COMPort-communication-exe\x64\Debug\Arduino-COMPort-communication-exe.vcxproj.AssemblyReference.cache
+G:\visual c++\Arduino-COMPort-communication-exe\Arduino-COMPort-communication-exe\x64\Debug\ArduinoCOMPortcommunicationexe.ArduinoCOM.resources
+G:\visual c++\Arduino-COMPort-communication-exe\Arduino-COMPort-communication-exe\x64\Debug\Arduino-COMPort-communication-exe.vcxproj.GenerateResource.cache
