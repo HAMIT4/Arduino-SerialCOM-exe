@@ -65,6 +65,11 @@ namespace ArduinoCOMPortcommunicationexe {
 	private: System::Windows::Forms::Label^ label5;
 	private: System::Windows::Forms::Button^ btnScan;
 	private: System::Windows::Forms::Label^ Info;
+	private: System::Windows::Forms::Button^ btnR;
+	private: System::Windows::Forms::CheckBox^ checkBox1;
+	private: System::Windows::Forms::Label^ lbDis;
+	private: System::Windows::Forms::Timer^ timer2;
+
 
 
 
@@ -85,6 +90,7 @@ namespace ArduinoCOMPortcommunicationexe {
 		{
 			this->components = (gcnew System::ComponentModel::Container());
 			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(ArduinoCOM::typeid));
+			this->serialPort1 = (gcnew System::IO::Ports::SerialPort(this->components));
 			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->cbPorts = (gcnew System::Windows::Forms::ComboBox());
@@ -104,6 +110,10 @@ namespace ArduinoCOMPortcommunicationexe {
 			this->label5 = (gcnew System::Windows::Forms::Label());
 			this->btnScan = (gcnew System::Windows::Forms::Button());
 			this->Info = (gcnew System::Windows::Forms::Label());
+			this->btnR = (gcnew System::Windows::Forms::Button());
+			this->checkBox1 = (gcnew System::Windows::Forms::CheckBox());
+			this->lbDis = (gcnew System::Windows::Forms::Label());
+			this->timer2 = (gcnew System::Windows::Forms::Timer(this->components));
 			this->SuspendLayout();
 			// 
 			// timer1
@@ -327,6 +337,43 @@ namespace ArduinoCOMPortcommunicationexe {
 			this->Info->Text = L"Info";
 			this->Info->Visible = false;
 			// 
+			// btnR
+			// 
+			this->btnR->Location = System::Drawing::Point(546, 65);
+			this->btnR->Name = L"btnR";
+			this->btnR->Size = System::Drawing::Size(75, 23);
+			this->btnR->TabIndex = 18;
+			this->btnR->Text = L"rec";
+			this->btnR->UseVisualStyleBackColor = true;
+			this->btnR->Click += gcnew System::EventHandler(this, &ArduinoCOM::btnR_Click);
+			// 
+			// checkBox1
+			// 
+			this->checkBox1->AutoSize = true;
+			this->checkBox1->BackColor = System::Drawing::Color::Transparent;
+			this->checkBox1->Location = System::Drawing::Point(374, 55);
+			this->checkBox1->Name = L"checkBox1";
+			this->checkBox1->Size = System::Drawing::Size(38, 17);
+			this->checkBox1->TabIndex = 19;
+			this->checkBox1->Text = L"cn";
+			this->checkBox1->UseVisualStyleBackColor = false;
+			this->checkBox1->CheckedChanged += gcnew System::EventHandler(this, &ArduinoCOM::checkBox1_CheckedChanged);
+			// 
+			// lbDis
+			// 
+			this->lbDis->AutoSize = true;
+			this->lbDis->BackColor = System::Drawing::Color::Transparent;
+			this->lbDis->Location = System::Drawing::Point(533, 114);
+			this->lbDis->Name = L"lbDis";
+			this->lbDis->Size = System::Drawing::Size(37, 13);
+			this->lbDis->TabIndex = 20;
+			this->lbDis->Text = L"check";
+			// 
+			// timer2
+			// 
+			this->timer2->Interval = 3000;
+			this->timer2->Tick += gcnew System::EventHandler(this, &ArduinoCOM::timer2_Tick);
+			// 
 			// ArduinoCOM
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -334,6 +381,9 @@ namespace ArduinoCOMPortcommunicationexe {
 			this->BackColor = System::Drawing::Color::Black;
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->ClientSize = System::Drawing::Size(629, 326);
+			this->Controls->Add(this->lbDis);
+			this->Controls->Add(this->checkBox1);
+			this->Controls->Add(this->btnR);
 			this->Controls->Add(this->Info);
 			this->Controls->Add(this->btnScan);
 			this->Controls->Add(this->label5);
@@ -373,7 +423,6 @@ namespace ArduinoCOMPortcommunicationexe {
 		
 	}
 	private: System::Void btnConnect_Click(System::Object^ sender, System::EventArgs^ e) {
-		
 		if (btnConnect->Text == "Connect") {
 			if (cbPorts->Text != "COM3") {
 				try {
@@ -384,6 +433,7 @@ namespace ArduinoCOMPortcommunicationexe {
 					serialPort1->PortName = cbPorts->Text;
 					serialPort1->BaudRate = Int32::Parse(cbBaudRate->Text);
 					serialPort1->Open();
+					checkBox1->Checked = true;
 					this->timer1->Start();
 					
 				}
@@ -401,6 +451,7 @@ namespace ArduinoCOMPortcommunicationexe {
 			this->Indicator->Visible = false;
 			this->Info->Visible = false;
 			this->timer1->Stop();
+			checkBox1->Checked = false;
 			int decrement = 10;
 			while (progressBar1->Value > progressBar1->Minimum)
 			{
@@ -432,6 +483,7 @@ namespace ArduinoCOMPortcommunicationexe {
 				int SendIntData = Convert::ToInt32(tbSend_int->Text);
 				array<Byte>^ int_byte = BitConverter::GetBytes(SendIntData);
 				serialPort1->Write(int_byte, 0, int_byte->Length);
+				this->timer2->Start();
 			}
 			catch (...) {
 				MessageBox::Show("Enter a Valid integer", "Warning");
@@ -444,6 +496,7 @@ namespace ArduinoCOMPortcommunicationexe {
 	private: System::Void btnSend_string_Click(System::Object^ sender, System::EventArgs^ e) {
 		if (btnConnect->Text == "Disconnect") {
 			serialPort1->WriteLine(tbSend_string->Text);
+			this->timer2->Start();
 		}
 		else if (tbSend_string->Text->Length == 0) {
 			MessageBox::Show("No data available to send" + "\n" + "Please enter a string", "Warning!");
@@ -453,7 +506,7 @@ namespace ArduinoCOMPortcommunicationexe {
 		}
 	}
 	private: System::Void tbReceiveData_TextChanged(System::Object^ sender, System::EventArgs^ e) {
-		tbReceiveData->AppendText(serialPort1->ReadLine() + "\n");
+		//tbReceiveData->AppendText(serialPort1->ReadExisting() + "\n");
 	}
 	private: System::Void btnScan_Click(System::Object^ sender, System::EventArgs^ e) {
 		this->cbPorts->Items->Clear();
@@ -464,6 +517,22 @@ namespace ArduinoCOMPortcommunicationexe {
 		array<Object^>^ Baud_rate = { 9600, 192000, 57600, 115200 };
 		cbBaudRate->Items->AddRange(Baud_rate);
 		cbBaudRate->SelectedIndex = 0;
+	}
+	private: System::Void btnR_Click(System::Object^ sender, System::EventArgs^ e) {
+		//tbReceiveData->AppendText(serialPort1->ReadLine() + "\n");
+	}
+	private: System::Void checkBox1_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		
+	}
+	private: System::Void timer2_Tick(System::Object^ sender, System::EventArgs^ e) {
+		try {
+			// Read and append data from the serial port
+			String^ receivedData = serialPort1->ReadLine();
+			tbReceiveData->AppendText(receivedData + "\n");
+		}
+		catch (...) {
+			lbDis->Text = "No data";
+		}
 	}
 };
 }
