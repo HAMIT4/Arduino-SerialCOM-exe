@@ -85,7 +85,6 @@ namespace ArduinoCOMPortcommunicationexe {
 		{
 			this->components = (gcnew System::ComponentModel::Container());
 			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(ArduinoCOM::typeid));
-			this->serialPort1 = (gcnew System::IO::Ports::SerialPort(this->components));
 			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->cbPorts = (gcnew System::Windows::Forms::ComboBox());
